@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import Homepage from './pages/Homepage';
+import Profile from './pages/Profile';
 import Room from './pages/Room';
 import JoinRoom from './pages/JoinRoom';
 import './App.css';
@@ -22,6 +23,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Homepage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

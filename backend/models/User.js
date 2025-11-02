@@ -18,6 +18,15 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    codeforcesHandle: {
+        type: String,
+        default: null,
+        trim: true
+    },
+    score: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const axios = require('axios');
 
 // Password validation function
 const validatePassword = (password) => {
@@ -147,6 +148,131 @@ router.post('/signin', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: 'Server error during signin' 
+        });
+    }
+});
+
+// Update user profile
+router.patch('/profile', async (req, res) => {
+    try {
+        const { userId, codeforcesHandle } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'User ID is required'
+            });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update Codeforces handle if provided
+        if (codeforcesHandle !== undefined) {
+            user.codeforcesHandle = codeforcesHandle;
+        }
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                codeforcesHandle: user.codeforcesHandle,
+                score: user.score
+            }
+        });
+
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update profile'
+        });
+    }
+});
+
+// Verify Codeforces handle
+router.post('/verify-codeforces', async (req, res) => {
+    try {
+        const { handle } = req.body;
+
+        if (!handle) {
+            return res.status(400).json({
+                success: false,
+                message: 'Codeforces handle is required'
+            });
+        }
+
+        // Check if handle exists on Codeforces with timeout and retry
+        try {
+            const response = await axios.get(`https://codeforces.com/api/user.info`, {
+                params: { handles: handle },
+                timeout: 15000, // Increased to 15 seconds
+                headers: {
+                    'User-Agent': 'CodeBattle-App'
+                },
+                maxRedirects: 5
+            });
+
+            if (response.data.status === 'OK' && response.data.result.length > 0) {
+                const userInfo = response.data.result[0];
+                
+                res.json({
+                    success: true,
+                    message: 'Codeforces handle verified',
+                    userData: {
+                        handle: userInfo.handle,
+                        rating: userInfo.rating || 0,
+                        rank: userInfo.rank || 'unrated'
+                    }
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Invalid Codeforces handle'
+                });
+            }
+        } catch (axiosError) {
+            console.error('Codeforces API error:', axiosError.code, axiosError.message);
+            
+            // If it's a timeout or network error, still allow the handle but warn user
+            if (axiosError.code === 'ETIMEDOUT' || axiosError.code === 'ECONNABORTED' || axiosError.code === 'ENOTFOUND' || axiosError.code === 'ECONNRESET') {
+                res.json({
+                    success: true,
+                    message: 'Handle saved (verification unavailable)',
+                    warning: 'Could not verify handle with Codeforces API due to network timeout. Your handle has been saved - please ensure it is correct.',
+                    userData: {
+                        handle: handle,
+                        rating: 0,
+                        rank: 'unverified'
+                    }
+                });
+            } else {
+                throw axiosError;
+            }
+        }
+
+    } catch (error) {
+        console.error('Verify Codeforces error:', error);
+        res.status(200).json({
+            success: true,
+            message: 'Handle saved without verification',
+            warning: 'Verification service unavailable. Your handle has been saved.',
+            userData: {
+                handle: req.body.handle,
+                rating: 0,
+                rank: 'unverified'
+            }
         });
     }
 });

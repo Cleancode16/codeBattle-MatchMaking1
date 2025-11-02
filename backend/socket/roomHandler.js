@@ -227,6 +227,72 @@ module.exports = (io) => {
             }
         });
 
+        // Remove participant (host only)
+        socket.on('remove-participant', async (data) => {
+            try {
+                const { roomId, userId, hostId } = data;
+
+                const room = await Room.findOne({ roomId });
+
+                if (!room) {
+                    socket.emit('error', { message: 'Room not found' });
+                    return;
+                }
+
+                // Check if requester is host
+                if (room.host.toString() !== hostId.toString()) {
+                    socket.emit('error', { message: 'Only host can remove participants' });
+                    return;
+                }
+
+                room.removeParticipant(userId);
+                await room.save();
+
+                io.to(roomId).emit('user-left', {
+                    userId,
+                    participants: room.participants
+                });
+
+                io.emit('room-list-updated');
+
+            } catch (error) {
+                console.error('Remove participant error:', error);
+                socket.emit('error', { message: 'Failed to remove participant' });
+            }
+        });
+
+        // Delete room (host only)
+        socket.on('delete-room', async (data) => {
+            try {
+                const { roomId, userId } = data;
+
+                const room = await Room.findOne({ roomId });
+
+                if (!room) {
+                    socket.emit('error', { message: 'Room not found' });
+                    return;
+                }
+
+                // Check if requester is host
+                if (room.host.toString() !== userId.toString()) {
+                    socket.emit('error', { message: 'Only host can delete room' });
+                    return;
+                }
+
+                await Room.findOneAndDelete({ roomId });
+
+                io.to(roomId).emit('room-closed', {
+                    message: 'Room has been deleted by host'
+                });
+
+                io.emit('room-list-updated');
+
+            } catch (error) {
+                console.error('Delete room error:', error);
+                socket.emit('error', { message: 'Failed to delete room' });
+            }
+        });
+
         // Handle disconnect
         socket.on('disconnect', async () => {
             console.log('User disconnected:', socket.id);

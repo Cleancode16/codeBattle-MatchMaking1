@@ -5,8 +5,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
-const roomRoutes = require('./routes/room');
-const roomHandler = require('./socket/roomHandler');
+const battleRoutes = require('./routes/battle');
+const battleHandler = require('./socket/battleHandler');
 const cors = require('cors');
 
 const app = express();
@@ -31,7 +31,7 @@ connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api', roomRoutes);
+app.use('/api', battleRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
@@ -44,7 +44,7 @@ app.get('/health', (req, res) => {
 });
 
 // Initialize Socket.io handlers
-roomHandler(io);
+battleHandler(io);
 
 // Make io accessible to routes
 app.set('io', io);
