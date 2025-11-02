@@ -8,6 +8,8 @@ import Homepage from './pages/Homepage';
 import Profile from './pages/Profile';
 import Room from './pages/Room';
 import JoinRoom from './pages/JoinRoom';
+import BattleHistory from './pages/BattleHistory';
+import Leaderboard from './pages/Leaderboard';
 import './App.css';
 
 function App() {
@@ -47,6 +49,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Room />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <BattleHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
                 </ProtectedRoute>
               }
             />

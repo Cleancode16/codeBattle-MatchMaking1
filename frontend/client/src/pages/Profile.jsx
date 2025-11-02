@@ -5,7 +5,7 @@ import api from '../utils/api';
 
 const Profile = () => {
     const navigate = useNavigate();
-    const { user, login } = useAuth();
+    const { user, updateUser } = useAuth();
     
     const [formData, setFormData] = useState({
         username: user?.username || '',
@@ -93,10 +93,10 @@ const Profile = () => {
 
             if (response.data.success) {
                 setSuccess('Profile updated successfully!');
-                // Update user in context
-                login({
-                    ...user,
-                    codeforcesHandle: formData.codeforcesHandle
+                // Update user in context with all fields
+                updateUser({
+                    codeforcesHandle: formData.codeforcesHandle,
+                    score: response.data.user.score
                 });
             }
         } catch (err) {

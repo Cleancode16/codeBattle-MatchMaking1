@@ -52,7 +52,13 @@ const Signin = () => {
             setSuccess(response.message || 'Login successful!');
             
             // Store user data using AuthContext
-            login(response.user);
+            login({
+                id: response.user.id,
+                username: response.user.username,
+                email: response.user.email,
+                codeforcesHandle: response.user.codeforcesHandle,
+                score: response.user.score
+            });
             
             // Redirect to homepage
             setTimeout(() => {

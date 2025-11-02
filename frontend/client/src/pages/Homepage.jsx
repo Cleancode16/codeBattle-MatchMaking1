@@ -150,6 +150,18 @@ const Homepage = () => {
                                 </span>
                             </div>
                             <button
+                                onClick={() => navigate('/leaderboard')}
+                                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm sm:text-base"
+                            >
+                                🏆 Leaderboard
+                            </button>
+                            <button
+                                onClick={() => navigate('/history')}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm sm:text-base"
+                            >
+                                📜 History
+                            </button>
+                            <button
                                 onClick={() => navigate('/profile')}
                                 className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition text-sm sm:text-base"
                             >
