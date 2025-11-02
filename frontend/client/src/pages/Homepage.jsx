@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import api from '../utils/api';
+import POTD from '../components/POTD';
 
 const Homepage = () => {
     const { user, logout } = useAuth();
@@ -182,6 +183,11 @@ const Homepage = () => {
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* POTD Section - NEW */}
+                <div className="mb-8">
+                    <POTD />
+                </div>
+
                 {/* Action Buttons */}
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-white mb-4">Choose Your Battle Mode</h2>

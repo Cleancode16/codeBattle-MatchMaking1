@@ -27,6 +27,23 @@ const userSchema = new mongoose.Schema({
     score: {
         type: Number,
         default: 0
+    },
+    streakData: {
+        currentStreak: {
+            type: Number,
+            default: 0
+        },
+        longestStreak: {
+            type: Number,
+            default: 0
+        },
+        lastSolvedDate: {
+            type: Date,
+            default: null
+        },
+        solvedDates: [{
+            type: Date
+        }]
     }
 }, {
     timestamps: true

@@ -10,6 +10,8 @@ const userRoutes = require('./routes/user');
 const battleHandler = require('./socket/battleHandler');
 const matchmakingHandler = require('./socket/matchmakingHandler');
 const cors = require('cors');
+const potdRoutes = require('./routes/potd');
+const { startPOTDVerificationJob } = require('./jobs/potdVerification');
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +37,7 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/api', battleRoutes);
 app.use('/api', userRoutes);
+app.use('/api/potd', potdRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
@@ -67,4 +70,7 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Socket.io is ready for connections`);
+    
+    // Start POTD auto-verification job
+    startPOTDVerificationJob();
 });
