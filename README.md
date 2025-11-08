@@ -97,9 +97,8 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:5000
 
----
 
-## 📁 Project Structure
+```bash
 CodeBattle/
 ├── backend/
 │   ├── config/
@@ -160,3 +159,4 @@ CodeBattle/
 │       └── vite.config.js
 │
 └── README.md
+```
